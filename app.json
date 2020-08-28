@@ -1,0 +1,12 @@
+{
+  "name": "synthpoint",
+  "displayName": "synthpoint",
+  "expo": {
+    "name": "synthpoint",
+    "slug": "synthpoint",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}

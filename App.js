@@ -1,12 +1,22 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import Key from './components/Key.component';
+
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+      
+      <Key note="C"/>
+      <Key note="D"/>
+      <Key note="E"/>
+      <Key note="F"/>
+      <Key note="G"/>
+      <Key note="A"/>
+      <Key note="B"/>
+      <Key note="C"/>
+
+      
     </View>
   );
 }
@@ -14,8 +24,10 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderWidth: 1,
+    alignContent: "stretch",
+    // width: "50%",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
 });

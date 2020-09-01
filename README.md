@@ -11,7 +11,7 @@
          alt="Javascript">
   </a>
 
-  <a href="https://github.com/bundly/dash">
+  <a href="https://github.com/darshkpatel/SynthPoint">
     <img src="https://forthebadge.com/images/badges/uses-git.svg"
          alt="Git">
   </a>

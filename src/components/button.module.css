@@ -1,0 +1,10 @@
+.container{
+    display: flex;
+    text-align: center;
+    min-width: 45%;
+    min-height: 20%;
+    background: black;
+}
+.content{
+    color: white;
+}

@@ -9,18 +9,14 @@ function App() {
         <title>SynthPoint</title>
       </header>
       <div className="container">
-        <div className="column">
-          <Button><span>A</span></Button>
-          <Button><span>B</span></Button>
-          <Button><span>C</span></Button>
-          <Button><span>D</span></Button>
-        </div>
-        <div className="column">
-          <Button><span>E</span></Button>
-          <Button><span>F</span></Button>
-          <Button><span>G</span></Button>
-          <Button><span>B</span></Button>
-        </div>
+        <Button><span>A</span></Button>
+        <Button><span>B</span></Button>
+        <Button><span>C</span></Button>
+        <Button><span>D</span></Button>
+        <Button><span>E</span></Button>
+        <Button><span>F</span></Button>
+        <Button><span>G</span></Button>
+        <Button><span>B</span></Button>
       </div>
     </div>
   );

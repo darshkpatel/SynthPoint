@@ -1,23 +1,16 @@
 .container{
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    align-content: center;
     text-align: center;
-    min-width: 45%;
-    min-height: 20%;
     background: black;
-    margin: 2px;
+
 }
 .container:active{
     transition: 0.2s;
     background: rgb(75, 159, 255);
 }
 .content{
-    flex: 1;
     color: white;
-    padding: 20%;
-    position: relative;
-    top: 20%
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }

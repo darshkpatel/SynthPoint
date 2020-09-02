@@ -2,6 +2,8 @@
   text-align: center;
   height: 100%;
   width: 100%;
+  font-family: 'Roboto', sans-serif;
+
 }
 
 .container {
@@ -17,7 +19,6 @@ html, body, #root {
 }
 
 .titleText{
-  font-family: 'Roboto', sans-serif;
   text-align: center;
   position: absolute;
   bottom: 40%;

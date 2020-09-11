@@ -47,7 +47,6 @@ function App() {
       if (synthStyle === 'Vibrato') {
         notes.addEventListener('onfocus', () => {
           synth.triggerRelease();
-          synth = new Tone.Synth().connect(new Tone.Vibrato(6).toMaster());
         });
       }
       else {
@@ -58,17 +57,20 @@ function App() {
     }
 
     function handleMotionEvent(event) {
-      var x = event.accelerationIncludingGravity.x;
-      var y = event.accelerationIncludingGravity.y;
-      var z = event.accelerationIncludingGravity.z;
+      // var x = event.accelerationIncludingGravity.x;
+      // var y = event.accelerationIncludingGravity.y;
+      // var z = event.accelerationIncludingGravity.z;
     }
 
 
     window.addEventListener("devicemotion", handleMotionEvent, true);
-  }, [synth, synthStyle]);
+  }, [synth, synthStyle, isMobile]);
 
 
   const updateSynthStyle = (style) => {
+    if (style === 'default') {
+      synth = new Tone.Synth();
+    }
     if (style === 'distortion') {
       synth = new Tone.Synth().connect(new Tone.Distortion(4).toMaster());
     }
@@ -116,6 +118,7 @@ function App() {
               <p onClick={() => updateSynthType('drums')}>Drums</p>
 
               <h4><u>Effects</u></h4>
+              <p onClick={() => updateSynthStyle('default')}>Default</p>
               <p onClick={() => updateSynthStyle('distortion')}>Distortion</p>
               <p onClick={() => updateSynthStyle('reverb')}>Reverb</p>
               <p onClick={() => updateSynthStyle('vibrato')}>Vibrato</p>

@@ -12,7 +12,7 @@ function App() {
   const isMobile = (window.screen.width < 780);
   // const synth = new Tone.Synth();
 
-  var synth = new Tone.Synth();
+  let synth = new Tone.Synth();
   // Set wave type
   synth.oscillator.type = 'sine';
 
@@ -23,7 +23,6 @@ function App() {
       }
     },
   );
-
 
   // Connect to master output
   synth.toDestination();
@@ -48,8 +47,7 @@ function App() {
         notes.addEventListener('onfocus', () => {
           synth.triggerRelease();
         });
-      }
-      else {
+      } else {
         notes.addEventListener('mouseup', () => {
           synth.triggerRelease();
         });
@@ -62,10 +60,8 @@ function App() {
       // var z = event.accelerationIncludingGravity.z;
     }
 
-
-    window.addEventListener("devicemotion", handleMotionEvent, true);
+    window.addEventListener('devicemotion', handleMotionEvent, true);
   }, [synth, synthStyle, isMobile]);
-
 
   const updateSynthStyle = (style) => {
     if (style === 'default') {
@@ -73,14 +69,12 @@ function App() {
     }
     if (style === 'distortion') {
       synth = new Tone.Synth().connect(new Tone.Distortion(4).toMaster());
-    }
-    else if (style === 'reverb') {
+    } else if (style === 'reverb') {
       synth = new Tone.Synth().connect(new Tone.Reverb(4).toMaster());
-    }
-    else if (style === 'vibrato') {
+    } else if (style === 'vibrato') {
       updateStyle('Vibrato');
     }
-  }
+  };
 
   const updateSynthType = (type) => {
     if (type === 'strings') {
@@ -89,7 +83,8 @@ function App() {
     if (type === 'drums') {
       synth = new Tone.MembraneSynth().toDestination();
     }
-  }
+  };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -110,19 +105,21 @@ function App() {
             </div>
             <button className={NavStyles.button} onClick={() => setOpen(!isOpen)}> </button>
 
-            {isOpen ? <div className={NavStyles.navContent}>
-              <h2>Options</h2>
-              <h4><u>Voice</u></h4>
-              <p onClick={() => updateSynthType('Piano')}>Piano</p>
-              <p onClick={() => updateSynthType('strings')}>Strings</p>
-              <p onClick={() => updateSynthType('drums')}>Drums</p>
+            {isOpen ? (
+              <div className={NavStyles.navContent} id="menu">
+                <h2>Options</h2>
+                <h4><u>Voice</u></h4>
+                <p onClick={() => updateSynthType('Piano')}>Piano</p>
+                <p onClick={() => updateSynthType('strings')}>Strings</p>
+                <p onClick={() => updateSynthType('drums')}>Drums</p>
 
-              <h4><u>Effects</u></h4>
-              <p onClick={() => updateSynthStyle('default')}>Default</p>
-              <p onClick={() => updateSynthStyle('distortion')}>Distortion</p>
-              <p onClick={() => updateSynthStyle('reverb')}>Reverb</p>
-              <p onClick={() => updateSynthStyle('vibrato')}>Vibrato</p>
-            </div> : ''}
+                <h4><u>Effects</u></h4>
+                <p onClick={() => updateSynthStyle('default')}>Default</p>
+                <p onClick={() => updateSynthStyle('distortion')}>Distortion</p>
+                <p onClick={() => updateSynthStyle('reverb')}>Reverb</p>
+                <p onClick={() => updateSynthStyle('vibrato')}>Vibrato</p>
+              </div>
+            ) : ''}
 
           </>
         )}

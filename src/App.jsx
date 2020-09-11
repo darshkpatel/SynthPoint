@@ -7,7 +7,8 @@ import NavStyles from './components/sidebar.module.css';
 
 function App() {
   const [isOpen, setOpen] = useState(false);
-  const [synthType, updateSynth] = useState('Synth')
+  // const [synthType, updateSynth] = useState('Synth');
+  const [synthStyle, updateStyle] = useState('Synth');
   const isMobile = (window.screen.width < 780);
   // const synth = new Tone.Synth();
 
@@ -42,27 +43,51 @@ function App() {
       });
 
       // Event Listener for clicking "off" notes
-      notes.addEventListener('mouseup', () => {
-        synth.triggerRelease();
-      });
+
+      if (synthStyle === 'Vibrato') {
+        notes.addEventListener('onfocus', () => {
+          synth.triggerRelease();
+          synth = new Tone.Synth().connect(new Tone.Vibrato(6).toMaster());
+        });
+      }
+      else {
+        notes.addEventListener('mouseup', () => {
+          synth.triggerRelease();
+        });
+      }
     }
 
     function handleMotionEvent(event) {
-
       var x = event.accelerationIncludingGravity.x;
       var y = event.accelerationIncludingGravity.y;
       var z = event.accelerationIncludingGravity.z;
-
-      console.log(x,y,z)
     }
 
-    // const updateStyle = () => {
-    //   var dist = new Tone.Distortion(4).toMaster();
-    //   synth = new Tone.Synth().connect(dist);
-    // }
 
     window.addEventListener("devicemotion", handleMotionEvent, true);
-  }, [synth]);
+  }, [synth, synthStyle]);
+
+
+  const updateSynthStyle = (style) => {
+    if (style === 'distortion') {
+      synth = new Tone.Synth().connect(new Tone.Distortion(4).toMaster());
+    }
+    else if (style === 'reverb') {
+      synth = new Tone.Synth().connect(new Tone.Reverb(4).toMaster());
+    }
+    else if (style === 'vibrato') {
+      updateStyle('Vibrato');
+    }
+  }
+
+  const updateSynthType = (type) => {
+    if (type === 'strings') {
+      synth = new Tone.DuoSynth().toDestination();
+    }
+    if (type === 'drums') {
+      synth = new Tone.MembraneSynth().toDestination();
+    }
+  }
   return (
     <div className="App">
       <header className="App-header">
@@ -86,14 +111,14 @@ function App() {
             {isOpen ? <div className={NavStyles.navContent}>
               <h2>Options</h2>
               <h4><u>Voice</u></h4>
-              <p onClick={() => updateSynth('Piano')}>Piano</p>
-              <p onClick={() => updateSynth('Strings')}>Strings</p>
-              <p onClick={() => updateSynth('Drums')}>Drums</p>
+              <p onClick={() => updateSynthType('Piano')}>Piano</p>
+              <p onClick={() => updateSynthType('strings')}>Strings</p>
+              <p onClick={() => updateSynthType('drums')}>Drums</p>
 
-              <h4><u>Styles</u></h4>
-              <p onClick={() => { synth = new Tone.Synth().connect(new Tone.Distortion(4).toMaster()); }}>Distortion</p>
-              <p>Reverb</p>
-              <p>Vebrato</p>
+              <h4><u>Effects</u></h4>
+              <p onClick={() => updateSynthStyle('distortion')}>Distortion</p>
+              <p onClick={() => updateSynthStyle('reverb')}>Reverb</p>
+              <p onClick={() => updateSynthStyle('vibrato')}>Vibrato</p>
             </div> : ''}
 
           </>

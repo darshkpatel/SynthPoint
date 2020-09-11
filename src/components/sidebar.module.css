@@ -1,0 +1,28 @@
+.button {
+    border-radius: 20px;
+    padding: 14px;
+    background-color: rgba(255,255,255,0.5);
+    border: none;
+    right: 5px;
+    top: 5px;
+    position: absolute;
+}
+
+.button:focus {
+    outline: none;
+}
+
+.navContent {
+    background-color: rgba(255,255,255,0.3);
+    color: white;
+    padding: 20px;
+    font-weight: bold;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    transition: transform 1s ease-out,
+}
+
+p:focus {
+    background-color: rgba(255,255,255,0.7);
+}

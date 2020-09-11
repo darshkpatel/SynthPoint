@@ -1,16 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import * as Tone from 'tone';
+
 import Button from './components/Button';
-import {
-  AbsoluteOrientationSensor,
-  // RelativeOrientationSensor,
-} from 'motion-sensors-polyfill';
+import NavStyles from './components/sidebar.module.css';
 
 function App() {
+  const [isOpen, setOpen] = useState(false);
+  const [synthType, updateSynth] = useState('Synth')
   const isMobile = (window.screen.width < 780);
-  const synth = new Tone.Synth();
+  // const synth = new Tone.Synth();
 
+  var synth = new Tone.Synth();
   // Set wave type
   synth.oscillator.type = 'sine';
 
@@ -46,16 +47,21 @@ function App() {
       });
     }
 
-    const sensor = new AbsoluteOrientationSensor();
-    const mat4 = new Float32Array(16);
-    sensor.start();
-    sensor.onerror = event => console.log(event.error.name, event.error.message);
+    function handleMotionEvent(event) {
 
-    sensor.onreading = () => {
-      sensor.populateMatrix(mat4);
-      // console.log(mat4)
+      var x = event.accelerationIncludingGravity.x;
+      var y = event.accelerationIncludingGravity.y;
+      var z = event.accelerationIncludingGravity.z;
+
+      console.log(x,y,z)
     }
-    console.log(mat4)
+
+    // const updateStyle = () => {
+    //   var dist = new Tone.Distortion(4).toMaster();
+    //   synth = new Tone.Synth().connect(dist);
+    // }
+
+    window.addEventListener("devicemotion", handleMotionEvent, true);
   }, [synth]);
   return (
     <div className="App">
@@ -64,16 +70,33 @@ function App() {
       </header>
       {isMobile
         && (
-          <div className="container" id="notes">
-            <Button><span>A#4</span></Button>
-            <Button><span>B#4</span></Button>
-            <Button><span>C#4</span></Button>
-            <Button><span>D#4</span></Button>
-            <Button><span>E#4</span></Button>
-            <Button><span>F#4</span></Button>
-            <Button><span>G#4</span></Button>
-            <Button><span>B#2</span></Button>
-          </div>
+          <>
+            <div className="container" id="notes">
+              <Button><span>A#4</span></Button>
+              <Button><span>B#4</span></Button>
+              <Button><span>C#4</span></Button>
+              <Button><span>D#4</span></Button>
+              <Button><span>E#4</span></Button>
+              <Button><span>F#4</span></Button>
+              <Button><span>G#4</span></Button>
+              <Button><span>B#2</span></Button>
+            </div>
+            <button className={NavStyles.button} onClick={() => setOpen(!isOpen)}> </button>
+
+            {isOpen ? <div className={NavStyles.navContent}>
+              <h2>Options</h2>
+              <h4><u>Voice</u></h4>
+              <p onClick={() => updateSynth('Piano')}>Piano</p>
+              <p onClick={() => updateSynth('Strings')}>Strings</p>
+              <p onClick={() => updateSynth('Drums')}>Drums</p>
+
+              <h4><u>Styles</u></h4>
+              <p onClick={() => { synth = new Tone.Synth().connect(new Tone.Distortion(4).toMaster()); }}>Distortion</p>
+              <p>Reverb</p>
+              <p>Vebrato</p>
+            </div> : ''}
+
+          </>
         )}
       {!isMobile && (
         <div className="titleText">

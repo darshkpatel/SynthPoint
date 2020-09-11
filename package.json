@@ -13,6 +13,7 @@
     "react-accelerometer": "^1.0.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.3",
+    "react-sidebar": "^3.0.2",
     "three": "^0.120.1",
     "tone": "^14.7.39"
   },

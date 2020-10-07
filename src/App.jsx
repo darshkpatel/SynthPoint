@@ -17,7 +17,7 @@ function App() {
   synth.oscillator.type = 'sine';
 
   document.addEventListener(
-    'mousedown', () => {
+    'pointerdown', () => {
       if (Tone.context.state !== 'running') {
         Tone.context.resume();
       }
@@ -31,7 +31,7 @@ function App() {
       console.log('Adding Listners');
       const notes = document.getElementById('notes');
       // Event Listener for clicking "on" notes
-      notes.addEventListener('mousedown', (e) => {
+      notes.addEventListener('pointerdown', (e) => {
         // Grabs note name from 'data-note'
         try {
           console.log('Triggering', e.target.innerText);
@@ -42,16 +42,18 @@ function App() {
       });
 
       // Event Listener for clicking "off" notes
-
-      if (synthStyle === 'Vibrato') {
-        notes.addEventListener('onfocus', () => {
-          synth.triggerRelease();
-        });
-      } else {
-        notes.addEventListener('mouseup', () => {
-          synth.triggerRelease();
-        });
-      }
+      notes.addEventListener('pointerup', () => {
+        synth.triggerRelease();
+      });
+      // if (synthStyle === 'Vibrato') {
+      //   notes.addEventListener('onfocus', () => {
+      //     synth.triggerRelease();
+      //   });
+      // } else {
+      //   notes.addEventListener('pointerup', () => {
+      //     synth.triggerRelease();
+      //   });
+      // }
     }
 
     function handleMotionEvent(event) {

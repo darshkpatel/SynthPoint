@@ -8,7 +8,8 @@ import NavStyles from './components/sidebar.module.css';
 function App() {
   const [isOpen, setOpen] = useState(false);
   // const [synthType, updateSynth] = useState('Synth');
-  const [synthStyle, updateStyle] = useState('Synth');
+  const [synthStyle, updateStyle] = useState('default');
+  const [synthType, updateType] = useState('Piano');
   const isMobile = (window.screen.width < 780);
   // const synth = new Tone.Synth();
 
@@ -67,19 +68,23 @@ function App() {
 
       // Event Listener for clicking "off" notes
 
-      if (synthStyle === 'Vibrato') {
-        notes.addEventListener('pointerup', () => {
-          synth.triggerRelease();
-        });
-      } else {
-        notes.addEventListener('pointerup', () => {
-          synth.triggerRelease();
-        });
-      }
+      notes.addEventListener('pointerup', () => {
+        synth.triggerRelease();
+      });
+      // if (synthStyle === 'Vibrato') {
+      //   notes.addEventListener('onfocus', () => {
+      //     synth.triggerRelease();
+      //   });
+      // } else {
+      //   notes.addEventListener('pointerup', () => {
+      //     synth.triggerRelease();
+      //   });
+      // }
     }
   }, [synth, synthStyle, isMobile]);
 
   const updateSynthStyle = (style) => {
+    updateStyle(style);
     if (style === 'default') {
       synth = new Tone.Synth();
     }
@@ -88,11 +93,12 @@ function App() {
     } else if (style === 'reverb') {
       synth = new Tone.Synth().connect(new Tone.Reverb(4).toDestination());
     } else if (style === 'vibrato') {
-      updateStyle('Vibrato');
+      // to-do
     }
   };
 
   const updateSynthType = (type) => {
+    updateType(type);
     if (type === 'strings') {
       synth = new Tone.DuoSynth().toDestination();
     }
@@ -124,16 +130,16 @@ function App() {
             {isOpen ? (
               <div className={NavStyles.navContent} id="menu">
                 <h2>Options</h2>
-                <h4><u>Voice</u></h4>
-                <p onClick={() => updateSynthType('Piano')}>Piano</p>
-                <p onClick={() => updateSynthType('strings')}>Strings</p>
-                <p onClick={() => updateSynthType('drums')}>Drums</p>
+                <h4 className={NavStyles.sidebarTitle}>Voice</h4>
+                <p onClick={() => updateSynthType('Piano')} className={synthType === 'Piano' ? NavStyles.menuActive : ''}>Piano</p>
+                <p onClick={() => updateSynthType('strings')} className={synthType === 'strings' ? NavStyles.menuActive : ''}>Strings</p>
+                <p onClick={() => updateSynthType('drums')} className={synthType === 'drums' ? NavStyles.menuActive : ''}>Drums</p>
 
-                <h4><u>Effects</u></h4>
-                <p onClick={() => updateSynthStyle('default')}>Default</p>
-                <p onClick={() => updateSynthStyle('distortion')}>Distortion</p>
-                <p onClick={() => updateSynthStyle('reverb')}>Reverb</p>
-                <p onClick={() => updateSynthStyle('vibrato')}>Vibrato</p>
+                <h4 className={NavStyles.sidebarTitle}>Effects</h4>
+                <p onClick={() => updateSynthStyle('default')} className={synthStyle === 'default' ? NavStyles.menuActive : ''}>Default</p>
+                <p onClick={() => updateSynthStyle('distortion')} className={synthStyle === 'distortion' ? NavStyles.menuActive : ''}>Distortion</p>
+                <p onClick={() => updateSynthStyle('reverb')} className={synthStyle === 'reverb' ? NavStyles.menuActive : ''}>Reverb</p>
+                <p onClick={() => updateSynthStyle('vibrato')} className={synthStyle === 'vibrato' ? NavStyles.menuActive : ''}>Vibrato</p>
               </div>
             ) : ''}
 

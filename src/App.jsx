@@ -17,25 +17,49 @@ function App() {
   synth.oscillator.type = 'sine';
 
   document.addEventListener(
-    'mousedown', () => {
+    'pointerdown', () => {
       if (Tone.context.state !== 'running') {
         Tone.context.resume();
       }
     },
   );
 
+  function getNote(note, deviceTilt) {
+    const playNotes = ['A#4', 'B#4', 'C#4', 'D#4', 'E#4', 'F#4', 'G#4'];
+    let finalIndex = playNotes.findIndex((d) => d === toString(note)) + (Math.floor(deviceTilt / 13));
+    if (finalIndex < 0) {
+      finalIndex += 7;
+      return playNotes[finalIndex];
+    }
+    if (finalIndex > 6) {
+      finalIndex -= 6;
+      return playNotes[finalIndex];
+    }
+    return playNotes[finalIndex];
+  }
+
   // Connect to master output
   synth.toDestination();
   useEffect(() => {
+    let rotVal;
+    function handleMotionEvent(event) {
+      rotVal = event.gamma;
+      // var y = event.accelerationIncludingGravity.y;
+      // var z = event.accelerationIncludingGravity.z;
+    }
+    window.addEventListener('deviceorientation', handleMotionEvent, true);
+
     if (isMobile) {
       console.log('Adding Listners');
       const notes = document.getElementById('notes');
       // Event Listener for clicking "on" notes
-      notes.addEventListener('mousedown', (e) => {
+      notes.addEventListener('pointerdown', (e) => {
         // Grabs note name from 'data-note'
         try {
-          console.log('Triggering', e.target.innerText);
-          synth.triggerAttack(e.target.innerText, '16n');
+          // synth.triggerAttack(e.target.innerText, '16n');
+          const playNote = getNote(e.target.innerText, rotVal);
+          synth.triggerAttack(playNote, '8n');
+          console.log('Initial Trigger: ', e.target.innerText, ' Final Trigger: ', playNote);
         } catch (e) {
           console.log(e);
         }
@@ -44,23 +68,15 @@ function App() {
       // Event Listener for clicking "off" notes
 
       if (synthStyle === 'Vibrato') {
-        notes.addEventListener('onfocus', () => {
+        notes.addEventListener('pointerup', () => {
           synth.triggerRelease();
         });
       } else {
-        notes.addEventListener('mouseup', () => {
+        notes.addEventListener('pointerup', () => {
           synth.triggerRelease();
         });
       }
     }
-
-    function handleMotionEvent(event) {
-      // var x = event.accelerationIncludingGravity.x;
-      // var y = event.accelerationIncludingGravity.y;
-      // var z = event.accelerationIncludingGravity.z;
-    }
-
-    window.addEventListener('devicemotion', handleMotionEvent, true);
   }, [synth, synthStyle, isMobile]);
 
   const updateSynthStyle = (style) => {
@@ -68,9 +84,9 @@ function App() {
       synth = new Tone.Synth();
     }
     if (style === 'distortion') {
-      synth = new Tone.Synth().connect(new Tone.Distortion(4).toMaster());
+      synth = new Tone.Synth().connect(new Tone.Distortion(4).toDestination());
     } else if (style === 'reverb') {
-      synth = new Tone.Synth().connect(new Tone.Reverb(4).toMaster());
+      synth = new Tone.Synth().connect(new Tone.Reverb(4).toDestination());
     } else if (style === 'vibrato') {
       updateStyle('Vibrato');
     }

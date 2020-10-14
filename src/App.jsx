@@ -9,12 +9,12 @@ function App() {
   const [isOpen, setOpen] = useState(false);
   // const [synthType, updateSynth] = useState('Synth');
   const [synthStyle, updateStyle] = useState('default');
-  const [synthType, updateType] = useState('Piano');
+  const [synthType, updateType] = useState('piano');
   const [synth, updateSynth] = useState(new Tone.Synth())
   const isMobile = (window.screen.width < 780);
   // const synth = new Tone.Synth();
   // Set wave type
-  synth.oscillator.type = 'sine';
+  // synth.oscillator.type = 'sine';
 
   document.addEventListener(
     'pointerdown', () => {
@@ -57,6 +57,7 @@ function App() {
         // Grabs note name from 'data-note'
         try {
           // synth.triggerAttack(e.target.innerText, '16n');
+          console.log('ran')
           const playNote = getNote(e.target.innerText, rotVal);
           synth.triggerAttack(playNote, '8n');
           console.log('Initial Trigger: ', e.target.innerText, ' Final Trigger: ', playNote);
@@ -80,7 +81,7 @@ function App() {
       //   });
       // }
     }
-  }, [synth, synthStyle, isMobile]);
+  }, [synthType, isMobile]);
 
   const updateSynthStyle = (style) => {
     updateStyle(style);
@@ -93,7 +94,7 @@ function App() {
       updateSynth(synth.disconnect());
       updateSynth(synth.connect(new Tone.Distortion(4).toDestination()));
     } else if (style === 'reverb') {
-      updateSynth(synth.disconnect());
+      // updateSynth(synth.disconnect());
       updateSynth(synth.connect(new Tone.Reverb(4).toDestination()));
     } else if (style === 'vibrato') {
       // to-do
@@ -101,11 +102,18 @@ function App() {
   };
 
   const updateSynthType = (type) => {
-    updateType(type);
+    updateType(type)
+    if (type === 'piano') {
+      updateSynth(synth.disconnect());
+      updateSynth(new Tone.Synth());
+      synth.oscillator.type = 'sine'
+    }
     if (type === 'strings') {
+      updateSynth(synth.disconnect());
       updateSynth(new Tone.DuoSynth().toDestination());
     }
     if (type === 'drums') {
+      updateSynth(synth.disconnect());
       updateSynth(new Tone.MembraneSynth().toDestination());
     }
   };
@@ -134,7 +142,7 @@ function App() {
               <div className={NavStyles.navContent} id="menu">
                 <h2>Options</h2>
                 <h4 className={NavStyles.sidebarTitle}>Voice</h4>
-                <p onClick={() => updateSynthType('Piano')} className={synthType === 'Piano' ? NavStyles.menuActive : ''}>Piano</p>
+                <p onClick={() => updateSynthType('piano')} className={synthType === 'piano' ? NavStyles.menuActive : ''}>Piano</p>
                 <p onClick={() => updateSynthType('strings')} className={synthType === 'strings' ? NavStyles.menuActive : ''}>Strings</p>
                 <p onClick={() => updateSynthType('drums')} className={synthType === 'drums' ? NavStyles.menuActive : ''}>Drums</p>
 

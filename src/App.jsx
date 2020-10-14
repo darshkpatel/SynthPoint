@@ -10,10 +10,9 @@ function App() {
   // const [synthType, updateSynth] = useState('Synth');
   const [synthStyle, updateStyle] = useState('default');
   const [synthType, updateType] = useState('Piano');
+  const [synth, updateSynth] = useState(new Tone.Synth())
   const isMobile = (window.screen.width < 780);
   // const synth = new Tone.Synth();
-
-  let synth = new Tone.Synth();
   // Set wave type
   synth.oscillator.type = 'sine';
 
@@ -86,12 +85,16 @@ function App() {
   const updateSynthStyle = (style) => {
     updateStyle(style);
     if (style === 'default') {
-      synth = new Tone.Synth();
+      console.log('updated')
+      updateSynth(synth.disconnect());
+      console.log(synth);
     }
     if (style === 'distortion') {
-      synth = new Tone.Synth().connect(new Tone.Distortion(4).toDestination());
+      updateSynth(synth.disconnect());
+      updateSynth(synth.connect(new Tone.Distortion(4).toDestination()));
     } else if (style === 'reverb') {
-      synth = new Tone.Synth().connect(new Tone.Reverb(4).toDestination());
+      updateSynth(synth.disconnect());
+      updateSynth(synth.connect(new Tone.Reverb(4).toDestination()));
     } else if (style === 'vibrato') {
       // to-do
     }
@@ -100,10 +103,10 @@ function App() {
   const updateSynthType = (type) => {
     updateType(type);
     if (type === 'strings') {
-      synth = new Tone.DuoSynth().toDestination();
+      updateSynth(new Tone.DuoSynth().toDestination());
     }
     if (type === 'drums') {
-      synth = new Tone.MembraneSynth().toDestination();
+      updateSynth(new Tone.MembraneSynth().toDestination());
     }
   };
 

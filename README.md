@@ -33,7 +33,8 @@
 <h1 align="center"> Key Features</h1>
 <ul>
 <li> LightWeight React PWA </li>
-<li> Change Notes by Moving Phone </li>
+<li> Change Octaves by Moving Phone </li>
+<li> Change Volume/Pitch on Press and Hold the keys by Moving Phone </li>
 <li> Multiple Instruments & Effects </li>
 </ul>
 

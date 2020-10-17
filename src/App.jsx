@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import * as Tone from 'tone';
@@ -10,11 +11,17 @@ function App() {
   // const [synthType, updateSynth] = useState('Synth');
   const [synthStyle, updateStyle] = useState('default');
   const [synthType, updateType] = useState('piano');
+  const [synthVolume, updateVolume] = useState(false);
   const [synth, updateSynth] = useState(new Tone.Synth());
   const isMobile = (window.screen.width < 780);
   // const synth = new Tone.Synth();
   // Set wave type
   // synth.oscillator.type = 'sine';
+  // const pitchShift = new Tone.PitchShift({
+  //   pitch: 1,
+  // }).toDestination();
+
+  // synth.connect(pitchShift);
 
   document.addEventListener(
     'pointerdown', () => {
@@ -26,7 +33,8 @@ function App() {
 
   function getNote(note, deviceTilt) {
     // const playNotes = ['A#4', 'B#4', 'C#4', 'D#4', 'E#4', 'F#4', 'G#4'];
-    // let finalIndex = playNotes.findIndex((d) => d === toString(note)) + (Math.floor(deviceTilt / 13));
+    // let finalIndex = playNotes.findIndex((d) => d === toString(note))
+    // + (Math.floor(deviceTilt / 13));
     // if (finalIndex < 0) {
     //   finalIndex += 7;
     //   return playNotes[finalIndex];
@@ -45,6 +53,10 @@ function App() {
     let rotVal;
     function handleMotionEvent(event) {
       rotVal = event.gamma;
+      if (synthVolume) {
+        synth.volume.value = Math.floor(rotVal / 4);
+        console.log(synth.volume.value);
+      }
       // var y = event.accelerationIncludingGravity.y;
       // var z = event.accelerationIncludingGravity.z;
     }
@@ -60,7 +72,7 @@ function App() {
           // synth.triggerAttack(e.target.innerText, '16n');
           console.log('ran');
           const playNote = getNote(e.target.innerText, rotVal);
-          synth.triggerAttack(playNote, '16n');
+          synth.triggerAttack(playNote, '32n');
           console.log('Initial Trigger: ', e.target.innerText, ' Final Trigger: ', playNote);
         } catch (e) {
           console.log(e);
@@ -82,7 +94,7 @@ function App() {
       //   });
       // }
     }
-  }, [synthType, isMobile]);
+  }, [synthVolume, synthType, isMobile]);
 
   const updateSynthStyle = (style) => {
     updateStyle(style);
@@ -107,7 +119,7 @@ function App() {
     if (type === 'piano') {
       updateSynth(synth.disconnect());
       updateSynth(new Tone.Synth());
-      synth.oscillator.type = 'sine';
+      // synth.oscillator.type = 'sine';
     }
     if (type === 'strings') {
       updateSynth(synth.disconnect());
@@ -152,6 +164,14 @@ function App() {
                 <p onClick={() => updateSynthStyle('distortion')} className={synthStyle === 'distortion' ? NavStyles.menuActive : ''}>Distortion</p>
                 <p onClick={() => updateSynthStyle('reverb')} className={synthStyle === 'reverb' ? NavStyles.menuActive : ''}>Reverb</p>
                 <p onClick={() => updateSynthStyle('vibrato')} className={synthStyle === 'vibrato' ? NavStyles.menuActive : ''}>Vibrato</p>
+
+                <h4 className={NavStyles.sidebarTitle}>
+                  Motion
+                  <br />
+                  {' '}
+                  Pitch
+                </h4>
+                <p onClick={() => (synthVolume ? updateVolume(false) : updateVolume(true))}>{ synthVolume ? 'Enabled' : 'Disabled' }</p>
               </div>
             ) : ''}
 

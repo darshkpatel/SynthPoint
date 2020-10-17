@@ -10,7 +10,7 @@ function App() {
   // const [synthType, updateSynth] = useState('Synth');
   const [synthStyle, updateStyle] = useState('default');
   const [synthType, updateType] = useState('piano');
-  const [synth, updateSynth] = useState(new Tone.Synth())
+  const [synth, updateSynth] = useState(new Tone.Synth());
   const isMobile = (window.screen.width < 780);
   // const synth = new Tone.Synth();
   // Set wave type
@@ -25,17 +25,18 @@ function App() {
   );
 
   function getNote(note, deviceTilt) {
-    const playNotes = ['A#4', 'B#4', 'C#4', 'D#4', 'E#4', 'F#4', 'G#4'];
-    let finalIndex = playNotes.findIndex((d) => d === toString(note)) + (Math.floor(deviceTilt / 13));
-    if (finalIndex < 0) {
-      finalIndex += 7;
-      return playNotes[finalIndex];
-    }
-    if (finalIndex > 6) {
-      finalIndex -= 6;
-      return playNotes[finalIndex];
-    }
-    return playNotes[finalIndex];
+    // const playNotes = ['A#4', 'B#4', 'C#4', 'D#4', 'E#4', 'F#4', 'G#4'];
+    // let finalIndex = playNotes.findIndex((d) => d === toString(note)) + (Math.floor(deviceTilt / 13));
+    // if (finalIndex < 0) {
+    //   finalIndex += 7;
+    //   return playNotes[finalIndex];
+    // }
+    // if (finalIndex > 6) {
+    //   finalIndex -= 6;
+    //   return playNotes[finalIndex];
+    // }
+    // return playNotes[finalIndex];
+    return `${note}#${4 - Math.floor(deviceTilt / 30)}`;
   }
 
   // Connect to master output
@@ -57,9 +58,9 @@ function App() {
         // Grabs note name from 'data-note'
         try {
           // synth.triggerAttack(e.target.innerText, '16n');
-          console.log('ran')
+          console.log('ran');
           const playNote = getNote(e.target.innerText, rotVal);
-          synth.triggerAttack(playNote, '8n');
+          synth.triggerAttack(playNote, '16n');
           console.log('Initial Trigger: ', e.target.innerText, ' Final Trigger: ', playNote);
         } catch (e) {
           console.log(e);
@@ -86,7 +87,7 @@ function App() {
   const updateSynthStyle = (style) => {
     updateStyle(style);
     if (style === 'default') {
-      console.log('updated')
+      console.log('updated');
       updateSynth(synth.disconnect());
       console.log(synth);
     }
@@ -102,11 +103,11 @@ function App() {
   };
 
   const updateSynthType = (type) => {
-    updateType(type)
+    updateType(type);
     if (type === 'piano') {
       updateSynth(synth.disconnect());
       updateSynth(new Tone.Synth());
-      synth.oscillator.type = 'sine'
+      synth.oscillator.type = 'sine';
     }
     if (type === 'strings') {
       updateSynth(synth.disconnect());
@@ -127,14 +128,14 @@ function App() {
         && (
           <>
             <div className="container" id="notes">
-              <Button><span>A#4</span></Button>
-              <Button><span>B#4</span></Button>
-              <Button><span>C#4</span></Button>
-              <Button><span>D#4</span></Button>
-              <Button><span>E#4</span></Button>
-              <Button><span>F#4</span></Button>
-              <Button><span>G#4</span></Button>
-              <Button><span>B#2</span></Button>
+              <Button><span>A</span></Button>
+              <Button><span>B</span></Button>
+              <Button><span>C</span></Button>
+              <Button><span>D</span></Button>
+              <Button><span>E</span></Button>
+              <Button><span>F</span></Button>
+              <Button><span>G</span></Button>
+              <Button><span>B</span></Button>
             </div>
             <button className={NavStyles.button} onClick={() => setOpen(!isOpen)}> </button>
 

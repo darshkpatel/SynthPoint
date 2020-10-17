@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import * as Tone from 'tone';
@@ -9,13 +10,18 @@ function App() {
   const [isOpen, setOpen] = useState(false);
   // const [synthType, updateSynth] = useState('Synth');
   const [synthStyle, updateStyle] = useState('default');
-  const [synthType, updateType] = useState('Piano');
+  const [synthType, updateType] = useState('piano');
+  const [synthVolume, updateVolume] = useState(false);
+  const [synth, updateSynth] = useState(new Tone.Synth());
   const isMobile = (window.screen.width < 780);
   // const synth = new Tone.Synth();
-
-  let synth = new Tone.Synth();
   // Set wave type
-  synth.oscillator.type = 'sine';
+  // synth.oscillator.type = 'sine';
+  // const pitchShift = new Tone.PitchShift({
+  //   pitch: 1,
+  // }).toDestination();
+
+  // synth.connect(pitchShift);
 
   document.addEventListener(
     'pointerdown', () => {
@@ -25,9 +31,37 @@ function App() {
     },
   );
 
+  function getNote(note, deviceTilt) {
+    // const playNotes = ['A#4', 'B#4', 'C#4', 'D#4', 'E#4', 'F#4', 'G#4'];
+    // let finalIndex = playNotes.findIndex((d) => d === toString(note))
+    // + (Math.floor(deviceTilt / 13));
+    // if (finalIndex < 0) {
+    //   finalIndex += 7;
+    //   return playNotes[finalIndex];
+    // }
+    // if (finalIndex > 6) {
+    //   finalIndex -= 6;
+    //   return playNotes[finalIndex];
+    // }
+    // return playNotes[finalIndex];
+    return `${note}#${4 - Math.floor(deviceTilt / 30)}`;
+  }
+
   // Connect to master output
   synth.toDestination();
   useEffect(() => {
+    let rotVal;
+    function handleMotionEvent(event) {
+      rotVal = event.gamma;
+      if (synthVolume) {
+        synth.volume.value = Math.floor(rotVal / 4);
+        console.log(synth.volume.value);
+      }
+      // var y = event.accelerationIncludingGravity.y;
+      // var z = event.accelerationIncludingGravity.z;
+    }
+    window.addEventListener('deviceorientation', handleMotionEvent, true);
+
     if (isMobile) {
       console.log('Adding Listners');
       const notes = document.getElementById('notes');
@@ -35,14 +69,18 @@ function App() {
       notes.addEventListener('pointerdown', (e) => {
         // Grabs note name from 'data-note'
         try {
-          console.log('Triggering', e.target.innerText);
-          synth.triggerAttack(e.target.innerText, '16n');
+          // synth.triggerAttack(e.target.innerText, '16n');
+          console.log('ran');
+          const playNote = getNote(e.target.innerText, rotVal);
+          synth.triggerAttack(playNote, '32n');
+          console.log('Initial Trigger: ', e.target.innerText, ' Final Trigger: ', playNote);
         } catch (e) {
           console.log(e);
         }
       });
 
       // Event Listener for clicking "off" notes
+
       notes.addEventListener('pointerup', () => {
         synth.triggerRelease();
       });
@@ -56,25 +94,21 @@ function App() {
       //   });
       // }
     }
-
-    function handleMotionEvent(event) {
-      // var x = event.accelerationIncludingGravity.x;
-      // var y = event.accelerationIncludingGravity.y;
-      // var z = event.accelerationIncludingGravity.z;
-    }
-
-    window.addEventListener('devicemotion', handleMotionEvent, true);
-  }, [synth, synthStyle, isMobile]);
+  }, [synthVolume, synthType, isMobile]);
 
   const updateSynthStyle = (style) => {
     updateStyle(style);
     if (style === 'default') {
-      synth = new Tone.Synth();
+      console.log('updated');
+      updateSynth(synth.disconnect());
+      console.log(synth);
     }
     if (style === 'distortion') {
-      synth = new Tone.Synth().connect(new Tone.Distortion(4).toDestination());
+      updateSynth(synth.disconnect());
+      updateSynth(synth.connect(new Tone.Distortion(4).toDestination()));
     } else if (style === 'reverb') {
-      synth = new Tone.Synth().connect(new Tone.Reverb(4).toDestination());
+      // updateSynth(synth.disconnect());
+      updateSynth(synth.connect(new Tone.Reverb(4).toDestination()));
     } else if (style === 'vibrato') {
       // to-do
     }
@@ -82,11 +116,18 @@ function App() {
 
   const updateSynthType = (type) => {
     updateType(type);
+    if (type === 'piano') {
+      updateSynth(synth.disconnect());
+      updateSynth(new Tone.Synth());
+      // synth.oscillator.type = 'sine';
+    }
     if (type === 'strings') {
-      synth = new Tone.DuoSynth().toDestination();
+      updateSynth(synth.disconnect());
+      updateSynth(new Tone.DuoSynth().toDestination());
     }
     if (type === 'drums') {
-      synth = new Tone.MembraneSynth().toDestination();
+      updateSynth(synth.disconnect());
+      updateSynth(new Tone.MembraneSynth().toDestination());
     }
   };
 
@@ -99,14 +140,14 @@ function App() {
         && (
           <>
             <div className="container" id="notes">
-              <Button><span>A#4</span></Button>
-              <Button><span>B#4</span></Button>
-              <Button><span>C#4</span></Button>
-              <Button><span>D#4</span></Button>
-              <Button><span>E#4</span></Button>
-              <Button><span>F#4</span></Button>
-              <Button><span>G#4</span></Button>
-              <Button><span>B#2</span></Button>
+              <Button><span>A</span></Button>
+              <Button><span>B</span></Button>
+              <Button><span>C</span></Button>
+              <Button><span>D</span></Button>
+              <Button><span>E</span></Button>
+              <Button><span>F</span></Button>
+              <Button><span>G</span></Button>
+              <Button><span>B</span></Button>
             </div>
             <button className={NavStyles.button} onClick={() => setOpen(!isOpen)}> </button>
 
@@ -114,7 +155,7 @@ function App() {
               <div className={NavStyles.navContent} id="menu">
                 <h2>Options</h2>
                 <h4 className={NavStyles.sidebarTitle}>Voice</h4>
-                <p onClick={() => updateSynthType('Piano')} className={synthType === 'Piano' ? NavStyles.menuActive : ''}>Piano</p>
+                <p onClick={() => updateSynthType('piano')} className={synthType === 'piano' ? NavStyles.menuActive : ''}>Piano</p>
                 <p onClick={() => updateSynthType('strings')} className={synthType === 'strings' ? NavStyles.menuActive : ''}>Strings</p>
                 <p onClick={() => updateSynthType('drums')} className={synthType === 'drums' ? NavStyles.menuActive : ''}>Drums</p>
 
@@ -123,6 +164,14 @@ function App() {
                 <p onClick={() => updateSynthStyle('distortion')} className={synthStyle === 'distortion' ? NavStyles.menuActive : ''}>Distortion</p>
                 <p onClick={() => updateSynthStyle('reverb')} className={synthStyle === 'reverb' ? NavStyles.menuActive : ''}>Reverb</p>
                 <p onClick={() => updateSynthStyle('vibrato')} className={synthStyle === 'vibrato' ? NavStyles.menuActive : ''}>Vibrato</p>
+
+                <h4 className={NavStyles.sidebarTitle}>
+                  Motion
+                  <br />
+                  {' '}
+                  Pitch
+                </h4>
+                <p onClick={() => (synthVolume ? updateVolume(false) : updateVolume(true))}>{ synthVolume ? 'Enabled' : 'Disabled' }</p>
               </div>
             ) : ''}
 

@@ -44,7 +44,10 @@ function App() {
     //   return playNotes[finalIndex];
     // }
     // return playNotes[finalIndex];
-    return `${note}#${4 - Math.floor(deviceTilt / 30)}`;
+    const re = deviceTilt >= 0 ? Math.floor(deviceTilt / 45) : Math.ceil(deviceTilt / 45);
+    return `${note}#${5 - re}`;
+
+    // return `${note}#${4 - re}`;
   }
 
   // Connect to master output
@@ -53,10 +56,16 @@ function App() {
     let rotVal;
     function handleMotionEvent(event) {
       rotVal = event.gamma;
+      const x = event.beta;
       if (synthVolume) {
         synth.volume.value = Math.floor(rotVal / 4);
         console.log(synth.volume.value);
       }
+      // if (x > 90 || x < -90) {
+      //   synth.volume.value = -100;
+      // } else {
+      //   synth.volume.value = 0;
+      // }
       // var y = event.accelerationIncludingGravity.y;
       // var z = event.accelerationIncludingGravity.z;
     }

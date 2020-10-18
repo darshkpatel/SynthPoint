@@ -23,6 +23,10 @@ function App() {
 
   // synth.connect(pitchShift);
 
+  // vibration API supported
+  if ('vibrate' in navigator) console.log('Vibration Supported');
+  else console.log('Vibration Not Supported');
+
   document.addEventListener(
     'pointerdown', () => {
       if (Tone.context.state !== 'running') {
@@ -56,7 +60,7 @@ function App() {
     let rotVal;
     function handleMotionEvent(event) {
       rotVal = event.gamma;
-      const x = event.beta;
+      // const x = event.beta;
       if (synthVolume) {
         synth.volume.value = Math.floor(rotVal / 4);
         console.log(synth.volume.value);
@@ -80,17 +84,19 @@ function App() {
         try {
           // synth.triggerAttack(e.target.innerText, '16n');
           console.log('ran');
+          navigator.vibrate(10000);
           const playNote = getNote(e.target.innerText, rotVal);
           synth.triggerAttack(playNote, '32n');
           console.log('Initial Trigger: ', e.target.innerText, ' Final Trigger: ', playNote);
-        } catch (e) {
-          console.log(e);
+        } catch (err) {
+          console.log(err);
         }
       });
 
       // Event Listener for clicking "off" notes
 
       notes.addEventListener('pointerup', () => {
+        navigator.vibrate(0);
         synth.triggerRelease();
       });
       // if (synthStyle === 'Vibrato') {

@@ -1,8 +1,4 @@
-import React from 'react';
-import Button from '../components/Button';
-
 const puppeteer = require('puppeteer');
-
 const iPhone = puppeteer.devices['iPhone X'];
 
 describe('Landing Page', () => {

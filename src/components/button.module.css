@@ -5,7 +5,7 @@
 }
 .container:active{
     transition: 0.2s;
-    background: rgb(75, 159, 255);
+    background: rgb(75, 159, 255)!important;
 }
 .content{
     color: white;

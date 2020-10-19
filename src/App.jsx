@@ -13,6 +13,7 @@ function App() {
   const [synthType, updateType] = useState('piano');
   const [synthVolume, updateVolume] = useState(false);
   const [synth, updateSynth] = useState(new Tone.Synth());
+  const [color, updateColor] = useState('rgb(0,0,0)');
   const isMobile = (window.screen.width < 780);
   // const synth = new Tone.Synth();
   // Set wave type
@@ -54,6 +55,20 @@ function App() {
     // return `${note}#${4 - re}`;
   }
 
+  function setColor(deviceTilt) {
+    const re = deviceTilt >= 0 ? Math.floor(deviceTilt / 45) : Math.ceil(deviceTilt / 45);
+    console.log({ deviceTilt, re });
+    switch (re) {
+      case -1:
+        updateColor('rgb(60,60,0)'); break;
+      case 0:
+        updateColor('rgb(0,0,0)'); break;
+      case 1:
+        updateColor('rgb(0,60,0)'); break;
+      default:
+        updateColor('rgb(0,0,0)'); break;
+    }
+  }
   // Connect to master output
   synth.toDestination();
   useEffect(() => {
@@ -61,6 +76,7 @@ function App() {
     function handleMotionEvent(event) {
       rotVal = event.gamma;
       // const x = event.beta;
+      setColor(rotVal);
       if (synthVolume) {
         synth.volume.value = Math.floor(rotVal / 4);
         console.log(synth.volume.value);
@@ -109,6 +125,7 @@ function App() {
       //   });
       // }
     }
+  // eslint-disable-next-line
   }, [synthVolume, synthType, isMobile]);
 
   const updateSynthStyle = (style) => {
@@ -155,14 +172,14 @@ function App() {
         && (
           <>
             <div className="container" id="notes">
-              <Button><span>A</span></Button>
-              <Button><span>B</span></Button>
-              <Button><span>C</span></Button>
-              <Button><span>D</span></Button>
-              <Button><span>E</span></Button>
-              <Button><span>F</span></Button>
-              <Button><span>G</span></Button>
-              <Button><span>B</span></Button>
+              <Button color={color}><span>A</span></Button>
+              <Button color={color}><span>B</span></Button>
+              <Button color={color}><span>C</span></Button>
+              <Button color={color}><span>D</span></Button>
+              <Button color={color}><span>E</span></Button>
+              <Button color={color}><span>F</span></Button>
+              <Button color={color}><span>G</span></Button>
+              <Button color={color}><span>B</span></Button>
             </div>
             <button className={NavStyles.button} onClick={() => setOpen(!isOpen)}> </button>
 

@@ -18,7 +18,7 @@ function App() {
   const [synth, updateSynth] = useState(new Tone.Synth());
   const [color, updateColor] = useState('rgb(0,0,0)');
   const isMobile = (window.screen.width < 780);
-  const allNotes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+  const allNotes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
   document.addEventListener(
     'touchstart', () => {
       if (Tone.context.state !== 'running') {
@@ -51,11 +51,11 @@ function App() {
     console.log({ deviceTilt, re });
     switch (re) {
       case -1:
-        updateColor('rgb(60,60,0)'); break;
+        updateColor('rgb(99,156,217)'); break;
       case 0:
         updateColor('rgb(0,0,0)'); break;
       case 1:
-        updateColor('rgb(0,60,0)'); break;
+        updateColor('rgb(84,84,197)'); break;
       default:
         updateColor('rgb(0,0,0)'); break;
     }
@@ -63,9 +63,9 @@ function App() {
   // Connect to master output
   synth.toDestination();
   useEffect(() => {
-    Tone.Transport.scheduleRepeat(function (time) {
-      console.log(time)
-    }, "8n");
+    Tone.Transport.scheduleRepeat((time) => {
+      console.log(time);
+    }, '8n');
     let rotVal;
     function handleMotionEvent(event) {
       rotVal = event.gamma;
@@ -157,23 +157,23 @@ function App() {
 
   const updateNotes = (value) => {
     updateTranspose(value);
-    var newNotes = [];
-    console.log(value)
+    const newNotes = [];
+    console.log(value);
     if (scaleMode === 'major' && value >= 0 && value <= 11 && value !== '') {
-      var intervals = [2, 2, 1, 2, 2, 2, 1];
-      var i = parseInt(value);
-      var counter = 0;
+      const intervals = [2, 2, 1, 2, 2, 2, 1];
+      let i = parseInt(value);
+      let counter = 0;
       while (newNotes.length !== 7) {
         console.log('adding', allNotes[i]);
         newNotes.push(allNotes[i]);
         i += intervals[counter];
         console.log(intervals[counter]);
-        counter++
+        counter++;
       }
       updateScale(newNotes);
     }
     // updateNotes([])
-  }
+  };
 
   return (
     <div className="App">
@@ -213,7 +213,7 @@ function App() {
                   Motion
                   <br />
                   {' '}
-                  Pitch
+                  Volume
                 </h4>
                 <p onClick={() => (synthVolume ? updateVolume(false) : updateVolume(true))}>{synthVolume ? 'Enabled' : 'Disabled'}</p>
                 <h4 className={NavStyles.sidebarTitle}>Transpose</h4>
@@ -223,8 +223,7 @@ function App() {
             ) : ''}
 
           </>
-        )
-      }
+        )}
       {
         !isMobile && (
           <div className="titleText">
@@ -232,7 +231,7 @@ function App() {
           </div>
         )
       }
-    </div >
+    </div>
   );
 }
 

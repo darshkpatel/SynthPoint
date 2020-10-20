@@ -13,9 +13,8 @@ function App() {
   const [synthType, updateType] = useState('piano');
   const [synthVolume, updateVolume] = useState(false);
   const [transposeVal, updateTranspose] = useState(0);
-  const [volumeVal, updateVolumeVal] = useState(1);
   const [scale, updateScale] = useState(['C', 'D', 'E', 'F', 'G', 'A', 'B']);
-  const [scaleMode, updateScaleMode] = useState('major');
+  const scaleMode = 'major';
   const [synth, updateSynth] = useState(new Tone.Synth());
   const [color, updateColor] = useState('rgb(0,0,0)');
   const isMobile = (window.screen.width < 780);
@@ -75,7 +74,6 @@ function App() {
       if (synthVolume) {
         synth.volume.value = Math.floor(rotVal / 4);
         console.log(synth.volume.value);
-        updateVolumeVal(0.5)
       }
     }
     window.addEventListener('deviceorientation', handleMotionEvent, true);
@@ -113,7 +111,7 @@ function App() {
 
       // Event Listener for clicking "off" notes
 
-      notes.addEventListener('pointerup', () => {
+      notes.addEventListener('touchend', () => {
         navigator.vibrate(0);
         synth.triggerRelease();
       });

@@ -1,17 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import styles from './button.module.css';
 
 const Button = (props) => {
-  const { children } = props;
-  const [focused, setFocused] = useState(false);
+  const { children, color } = props;
   return (
     <>
 
-      <div style={{
-        textAlign: 'center', background: focused ? 'rgb(75, 159, 255)' : props.color,
-      }}
-        onTouchStart={() => setFocused(true)}
-        onTouchEnd={() => setFocused(false)}>
+      <div className={styles.container} style={{ backgroundColor: color || 'black' }}>
         <div className={styles.content}>
           {children}
         </div>
@@ -23,5 +19,6 @@ const Button = (props) => {
 export default Button;
 
 Button.propTypes = {
-
+  color: PropTypes.string,
+  children: PropTypes.node,
 };

@@ -89,7 +89,6 @@ function App() {
       console.log(e.touches.length);
       try {
         // synth.triggerAttack(e.target.innerText, '16n');
-        console.log('ran');
         navigator.vibrate(10000);
         if (synthTypeRef.current === 'drums') {
           playDrums(e);

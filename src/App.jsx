@@ -6,6 +6,7 @@ import * as Tone from 'tone';
 import Button from './components/Button';
 import NavStyles from './components/sidebar.module.css';
 
+
 function App() {
   const [isOpen, setOpen] = useState(false);
   // const [synthType, updateSynth] = useState('Synth');
@@ -102,22 +103,13 @@ function App() {
     }
 
     const playDrums = (e) => {
-      const loopLinks = {
-        'loop 1': 'https://tonejs.github.io/audio/drum-samples/handdrum-loop.mp3',
-        'loop 2': 'https://tonejs.github.io/audio/drum-samples/breakbeat.mp3'
-      }
-      if (e.target.innerText === 'loop 1' || e.target.innerText === 'loop 2' || e.target.innerText === 'loop 3' || e.target.innerText === 'loop 4') {
-        console.log(loopLinks[e.target.innerText])
-        const player = new Tone.Player(loopLinks[e.target.innerText]).toDestination();
-        player.loop = true;
-        player.autostart = true;
-      }
-      else {
-        const drum = new Tone.Player(`https://oramics.github.io/sampled/DM/CR-78/samples/${e.target.innerText}.wav`).toDestination();
-        Tone.loaded().then(() => {
-          drum.start();
-        });
-      }
+      // Tone.Buffer.supportsType('mp3')
+      const drum = new Tone.Player(`./${e.target.innerText}.wav`).toDestination();
+      // const drumName = ['hat', 'snare', 'kick', 'cowbel']
+      // const drum = new Tone.Player(`https://oramics.github.io/sampled/DM/CR-78/samples/${e.target.innerText}.wav`).toDestination();
+      Tone.loaded().then(() => {
+        drum.start();
+      });
     }
 
     if (isMobile) {
@@ -172,15 +164,6 @@ function App() {
       updateSynth(synth.disconnect());
       updateSynth(new Tone.DuoSynth().toDestination());
     }
-    if (type === 'drums') {
-      var kick = new Tone.Player("./public/snare.mp3").toDestination();
-      kick.autostart = true
-
-
-      Tone.Transport.start()
-      // updateSynth(synth.disconnect());
-      // updateSynth(new Tone.MembraneSynth().toDestination());
-    }
   };
 
   const updateNotes = (value) => {
@@ -212,14 +195,14 @@ function App() {
         && (
           <>
             <div className="container" id="notes">
-              <Button color={color}><span>{synthType === 'drums' ? 'conga-l' : scale[5]}</span></Button>
+              <Button color={color}><span>{synthType === 'drums' ? 'conga' : scale[5]}</span></Button>
               <Button color={color}><span>{synthType === 'drums' ? 'cowbell' : scale[6]}</span></Button>
               <Button color={color}><span>{synthType === 'drums' ? 'kick' : scale[0]}</span></Button>
               <Button color={color}><span>{synthType === 'drums' ? 'snare' : scale[1]}</span></Button>
               <Button color={color}><span>{synthType === 'drums' ? 'hihat' : scale[2]}</span></Button>
               <Button color={color}><span>{synthType === 'drums' ? 'cymbal' : scale[3]}</span></Button>
               <Button color={color}><span>{synthType === 'drums' ? 'rim' : scale[4]}</span></Button>
-              <Button color={color}><span>{synthType === 'drums' ? 'tamb-long' : scale[5]}</span></Button>
+              <Button color={color}><span>{synthType === 'drums' ? 'tamb' : scale[5]}</span></Button>
             </div>
             <button className={NavStyles.button} onClick={() => setOpen(!isOpen)}> </button>
 

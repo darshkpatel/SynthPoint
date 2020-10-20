@@ -12,24 +12,15 @@ function App() {
   const [synthStyle, updateStyle] = useState('default');
   const [synthType, updateType] = useState('piano');
   const [synthVolume, updateVolume] = useState(false);
+  const [transposeVal, updateTranspose] = useState(0);
+  const [scale, updateScale] = useState(['C', 'D', 'E', 'F', 'G', 'A', 'B']);
+  const scaleMode = 'major';
   const [synth, updateSynth] = useState(new Tone.Synth());
   const [color, updateColor] = useState('rgb(0,0,0)');
   const isMobile = (window.screen.width < 780);
-  // const synth = new Tone.Synth();
-  // Set wave type
-  // synth.oscillator.type = 'sine';
-  // const pitchShift = new Tone.PitchShift({
-  //   pitch: 1,
-  // }).toDestination();
-
-  // synth.connect(pitchShift);
-
-  // vibration API supported
-  if ('vibrate' in navigator) console.log('Vibration Supported');
-  else console.log('Vibration Not Supported');
-
+  const allNotes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
   document.addEventListener(
-    'pointerdown', () => {
+    'touchstart', () => {
       if (Tone.context.state !== 'running') {
         Tone.context.resume();
       }
@@ -50,7 +41,7 @@ function App() {
     // }
     // return playNotes[finalIndex];
     const re = deviceTilt >= 0 ? Math.floor(deviceTilt / 45) : Math.ceil(deviceTilt / 45);
-    return `${note}#${5 - re}`;
+    return `${note}${5 - re}`;
 
     // return `${note}#${4 - re}`;
   }
@@ -72,6 +63,9 @@ function App() {
   // Connect to master output
   synth.toDestination();
   useEffect(() => {
+    Tone.Transport.scheduleRepeat(function (time) {
+      console.log(time)
+    }, "8n");
     let rotVal;
     function handleMotionEvent(event) {
       rotVal = event.gamma;
@@ -81,51 +75,48 @@ function App() {
         synth.volume.value = Math.floor(rotVal / 4);
         console.log(synth.volume.value);
       }
-      // if (x > 90 || x < -90) {
-      //   synth.volume.value = -100;
-      // } else {
-      //   synth.volume.value = 0;
-      // }
-      // var y = event.accelerationIncludingGravity.y;
-      // var z = event.accelerationIncludingGravity.z;
     }
     window.addEventListener('deviceorientation', handleMotionEvent, true);
 
     if (isMobile) {
       console.log('Adding Listners');
       const notes = document.getElementById('notes');
+
+      console.log(notes);
       // Event Listener for clicking "on" notes
-      notes.addEventListener('pointerdown', (e) => {
+      notes.addEventListener('touchstart', (e) => {
         // Grabs note name from 'data-note'
+        console.log(e.touches.length);
         try {
           // synth.triggerAttack(e.target.innerText, '16n');
           console.log('ran');
           navigator.vibrate(10000);
           const playNote = getNote(e.target.innerText, rotVal);
-          synth.triggerAttack(playNote, '32n');
+          synth.triggerAttack(playNote, Tone.context.currentTime);
           console.log('Initial Trigger: ', e.target.innerText, ' Final Trigger: ', playNote);
         } catch (err) {
           console.log(err);
         }
       });
 
+      // notes.addEventListener('touchmove', (e) => {
+      //   if (e.targetTouches.length === 1) {
+      //     var touch = e.targetTouches[0];
+      //     var x = e.touches[0].clientX;
+      //     var y = e.touches[0].clientY;
+      //     // synth.triggerAttackRelease(["C3", "E3", "G3"], "8n");
+      //     // updateSynth(new Tone.Synth())
+      //   }
+      // })
+
       // Event Listener for clicking "off" notes
 
-      notes.addEventListener('pointerup', () => {
+      notes.addEventListener('touchend', () => {
         navigator.vibrate(0);
         synth.triggerRelease();
       });
-      // if (synthStyle === 'Vibrato') {
-      //   notes.addEventListener('onfocus', () => {
-      //     synth.triggerRelease();
-      //   });
-      // } else {
-      //   notes.addEventListener('pointerup', () => {
-      //     synth.triggerRelease();
-      //   });
-      // }
     }
-  // eslint-disable-next-line
+    // eslint-disable-next-line
   }, [synthVolume, synthType, isMobile]);
 
   const updateSynthStyle = (style) => {
@@ -139,10 +130,11 @@ function App() {
       updateSynth(synth.disconnect());
       updateSynth(synth.connect(new Tone.Distortion(4).toDestination()));
     } else if (style === 'reverb') {
-      // updateSynth(synth.disconnect());
+      updateSynth(synth.disconnect());
       updateSynth(synth.connect(new Tone.Reverb(4).toDestination()));
     } else if (style === 'vibrato') {
-      // to-do
+      updateSynth(synth.disconnect());
+      updateSynth(synth.connect(new Tone.Vibrato(4, 0.5).toDestination()));
     }
   };
 
@@ -163,6 +155,26 @@ function App() {
     }
   };
 
+  const updateNotes = (value) => {
+    updateTranspose(value);
+    var newNotes = [];
+    console.log(value)
+    if (scaleMode === 'major' && value >= 0 && value <= 11 && value !== '') {
+      var intervals = [2, 2, 1, 2, 2, 2, 1];
+      var i = parseInt(value);
+      var counter = 0;
+      while (newNotes.length !== 7) {
+        console.log('adding', allNotes[i]);
+        newNotes.push(allNotes[i]);
+        i += intervals[counter];
+        console.log(intervals[counter]);
+        counter++
+      }
+      updateScale(newNotes);
+    }
+    // updateNotes([])
+  }
+
   return (
     <div className="App">
       <header className="App-header">
@@ -172,14 +184,14 @@ function App() {
         && (
           <>
             <div className="container" id="notes">
-              <Button color={color}><span>A</span></Button>
-              <Button color={color}><span>B</span></Button>
-              <Button color={color}><span>C</span></Button>
-              <Button color={color}><span>D</span></Button>
-              <Button color={color}><span>E</span></Button>
-              <Button color={color}><span>F</span></Button>
-              <Button color={color}><span>G</span></Button>
-              <Button color={color}><span>B</span></Button>
+              <Button color={color}><span>{scale[5]}</span></Button>
+              <Button color={color}><span>{scale[6]}</span></Button>
+              <Button color={color}><span>{scale[0]}</span></Button>
+              <Button color={color}><span>{scale[1]}</span></Button>
+              <Button color={color}><span>{scale[2]}</span></Button>
+              <Button color={color}><span>{scale[3]}</span></Button>
+              <Button color={color}><span>{scale[4]}</span></Button>
+              <Button color={color}><span>{scale[5]}</span></Button>
             </div>
             <button className={NavStyles.button} onClick={() => setOpen(!isOpen)}> </button>
 
@@ -203,18 +215,24 @@ function App() {
                   {' '}
                   Pitch
                 </h4>
-                <p onClick={() => (synthVolume ? updateVolume(false) : updateVolume(true))}>{ synthVolume ? 'Enabled' : 'Disabled' }</p>
+                <p onClick={() => (synthVolume ? updateVolume(false) : updateVolume(true))}>{synthVolume ? 'Enabled' : 'Disabled'}</p>
+                <h4 className={NavStyles.sidebarTitle}>Transpose</h4>
+                <input type="number" onChange={(e) => updateNotes(e.target.value)} min="0" max="11" />
+                {transposeVal < 0 ? <p className={NavStyles.alertText}>transpose value between 0-11</p> : ''}
               </div>
             ) : ''}
 
           </>
-        )}
-      {!isMobile && (
-        <div className="titleText">
-          <h1>Sorry, this app is only supported on mobile devices.</h1>
-        </div>
-      )}
-    </div>
+        )
+      }
+      {
+        !isMobile && (
+          <div className="titleText">
+            <h1>Sorry, this app is only supported on mobile devices.</h1>
+          </div>
+        )
+      }
+    </div >
   );
 }
 

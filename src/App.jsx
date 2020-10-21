@@ -1,21 +1,26 @@
 /* eslint-disable no-console */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import './App.css';
 import * as Tone from 'tone';
 
 import Button from './components/Button';
 import NavStyles from './components/sidebar.module.css';
 
+
 function App() {
   const [isOpen, setOpen] = useState(false);
   // const [synthType, updateSynth] = useState('Synth');
   const [synthStyle, updateStyle] = useState('default');
   const [synthType, updateType] = useState('piano');
+  const synthTypeRef = useRef(synthType);
+
   const [synthVolume, updateVolume] = useState(false);
   const [transposeVal, updateTranspose] = useState(0);
   const [scale, updateScale] = useState(['C', 'D', 'E', 'F', 'G', 'A', 'B']);
   const scaleMode = 'major';
   const [synth, updateSynth] = useState(new Tone.Synth());
+  const synthRef = useRef(synth)
+
   const [color, updateColor] = useState('rgb(0,0,0)');
   const isMobile = (window.screen.width < 780);
   const allNotes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
@@ -41,14 +46,14 @@ function App() {
     // }
     // return playNotes[finalIndex];
     const re = deviceTilt >= 0 ? Math.floor(deviceTilt / 45) : Math.ceil(deviceTilt / 45);
-    return `${note}${5 - re}`;
+    const playNote = `${note}${5 - re}`;
+    synthRef.current.triggerAttack(playNote, Tone.context.currentTime);
 
     // return `${note}#${4 - re}`;
   }
 
   function setColor(deviceTilt) {
     const re = deviceTilt >= 0 ? Math.floor(deviceTilt / 45) : Math.ceil(deviceTilt / 45);
-    console.log({ deviceTilt, re });
     switch (re) {
       case -1:
         updateColor('rgb(99,156,217)'); break;
@@ -64,7 +69,7 @@ function App() {
   synth.toDestination();
   useEffect(() => {
     Tone.Transport.scheduleRepeat((time) => {
-      console.log(time);
+      // console.log(time);
     }, '8n');
     let rotVal;
     function handleMotionEvent(event) {
@@ -78,46 +83,49 @@ function App() {
     }
     window.addEventListener('deviceorientation', handleMotionEvent, true);
 
+
+    const playNote = (e) => {
+      // Grabs note name from 'data-note'
+      console.log(e.touches.length);
+      try {
+        // synth.triggerAttack(e.target.innerText, '16n');
+        navigator.vibrate(10000);
+        if (synthTypeRef.current === 'drums') {
+          playDrums(e);
+        }
+        else {
+          getNote(e.target.innerText, rotVal);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    const playDrums = (e) => {
+      // Tone.Buffer.supportsType('mp3')
+      const drum = new Tone.Player(`./${e.target.innerText}.wav`).toDestination();
+      // const drumName = ['hat', 'snare', 'kick', 'cowbel']
+      // const drum = new Tone.Player(`https://oramics.github.io/sampled/DM/CR-78/samples/${e.target.innerText}.wav`).toDestination();
+      Tone.loaded().then(() => {
+        drum.start();
+      });
+    }
+
     if (isMobile) {
       console.log('Adding Listners');
-      const notes = document.getElementById('notes');
-
-      console.log(notes);
       // Event Listener for clicking "on" notes
-      notes.addEventListener('touchstart', (e) => {
-        // Grabs note name from 'data-note'
-        console.log(e.touches.length);
-        try {
-          // synth.triggerAttack(e.target.innerText, '16n');
-          console.log('ran');
-          navigator.vibrate(10000);
-          const playNote = getNote(e.target.innerText, rotVal);
-          synth.triggerAttack(playNote, Tone.context.currentTime);
-          console.log('Initial Trigger: ', e.target.innerText, ' Final Trigger: ', playNote);
-        } catch (err) {
-          console.log(err);
-        }
-      });
-
-      // notes.addEventListener('touchmove', (e) => {
-      //   if (e.targetTouches.length === 1) {
-      //     var touch = e.targetTouches[0];
-      //     var x = e.touches[0].clientX;
-      //     var y = e.touches[0].clientY;
-      //     // synth.triggerAttackRelease(["C3", "E3", "G3"], "8n");
-      //     // updateSynth(new Tone.Synth())
-      //   }
-      // })
-
-      // Event Listener for clicking "off" notes
+      var notes = document.getElementById("notes");
+      console.log(notes);
+      notes.addEventListener('touchstart', playNote);
 
       notes.addEventListener('touchend', () => {
         navigator.vibrate(0);
-        synth.triggerRelease();
+        synthRef.current.triggerRelease();
       });
     }
+
     // eslint-disable-next-line
-  }, [synthVolume, synthType, isMobile]);
+  }, [synthVolume, synthTypeRef, isMobile]);
 
   const updateSynthStyle = (style) => {
     updateStyle(style);
@@ -128,30 +136,32 @@ function App() {
     }
     if (style === 'distortion') {
       updateSynth(synth.disconnect());
+      synthRef.current = synth.connect(new Tone.Distortion(4).toDestination())
       updateSynth(synth.connect(new Tone.Distortion(4).toDestination()));
     } else if (style === 'reverb') {
       updateSynth(synth.disconnect());
       updateSynth(synth.connect(new Tone.Reverb(4).toDestination()));
     } else if (style === 'vibrato') {
       updateSynth(synth.disconnect());
-      updateSynth(synth.connect(new Tone.Vibrato(4, 0.5).toDestination()));
+      updateSynth(synth.connect(new Tone.Vibrato(3, 0.5).toDestination()));
     }
   };
 
   const updateSynthType = (type) => {
+    synthTypeRef.current = type;
     updateType(type);
+
+    console.log(synthType)
     if (type === 'piano') {
+      synthRef.current = new Tone.Synth().toDestination()
       updateSynth(synth.disconnect());
       updateSynth(new Tone.Synth());
       // synth.oscillator.type = 'sine';
     }
     if (type === 'strings') {
+      synthRef.current = new Tone.FMSynth().toDestination()
       updateSynth(synth.disconnect());
       updateSynth(new Tone.DuoSynth().toDestination());
-    }
-    if (type === 'drums') {
-      updateSynth(synth.disconnect());
-      updateSynth(new Tone.MembraneSynth().toDestination());
     }
   };
 
@@ -184,14 +194,14 @@ function App() {
         && (
           <>
             <div className="container" id="notes">
-              <Button color={color}><span>{scale[5]}</span></Button>
-              <Button color={color}><span>{scale[6]}</span></Button>
-              <Button color={color}><span>{scale[0]}</span></Button>
-              <Button color={color}><span>{scale[1]}</span></Button>
-              <Button color={color}><span>{scale[2]}</span></Button>
-              <Button color={color}><span>{scale[3]}</span></Button>
-              <Button color={color}><span>{scale[4]}</span></Button>
-              <Button color={color}><span>{scale[5]}</span></Button>
+              <Button color={color}><span>{synthType === 'drums' ? 'conga' : scale[5]}</span></Button>
+              <Button color={color}><span>{synthType === 'drums' ? 'cowbell' : scale[6]}</span></Button>
+              <Button color={color}><span>{synthType === 'drums' ? 'kick' : scale[0]}</span></Button>
+              <Button color={color}><span>{synthType === 'drums' ? 'snare' : scale[1]}</span></Button>
+              <Button color={color}><span>{synthType === 'drums' ? 'hihat' : scale[2]}</span></Button>
+              <Button color={color}><span>{synthType === 'drums' ? 'cymbal' : scale[3]}</span></Button>
+              <Button color={color}><span>{synthType === 'drums' ? 'rim' : scale[4]}</span></Button>
+              <Button color={color}><span>{synthType === 'drums' ? 'tamb' : scale[5]}</span></Button>
             </div>
             <button className={NavStyles.button} onClick={() => setOpen(!isOpen)}> </button>
 

@@ -27,7 +27,7 @@
   <a href="#credits">Credits</a>
 </p>
 
-<h1 align="center"> Check it out at: <a href="https://synthpoint.tech">synthpoint.tech </a> </h1>
+<h1 align="center"> Check it out at: <a href="https://synth-point.vercel.app">https://synth-point.vercel.app</a> </h1>
 
 <a name="key-features">
 <h1 align="center"> Key Features</h1>
